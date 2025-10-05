@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using CourseMate.Models.Context;
+using CourseMate.Repository;
+using CourseMate.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+// Services Registration
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IStudentRepositoryService, StudentRepositoryService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
