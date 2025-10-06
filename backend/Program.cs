@@ -14,6 +14,13 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder
 // Services Registration
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentRepositoryService, StudentRepositoryService>();
+builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAuthorizationRepositoryService, AuthorizationRepositoryService>();
+builder.Services.AddScoped<IAuthorizationRepository, AuthorizationRepository>();
+//builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+//builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+//builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
