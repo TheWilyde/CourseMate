@@ -1,7 +1,11 @@
 ﻿namespace CourseMate.Models.Enums
 {
-    public enum enumRole
-    {
+public enum enumRole
+{
+    Admin = 1,
+    Instructor = 2,
+    Student = 3,
+    Guest = 4
     }
 
     public enum enumMajor
@@ -34,5 +38,12 @@
         Summer = 3,
     }
 
+    public enum enumStatus
+    {
+        Inactive = 0,
+        Active = 1,
+        Suspended = 2,
+        Deleted = 3
+    }
 
 }
