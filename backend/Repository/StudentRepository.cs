@@ -1,5 +1,6 @@
 ﻿using CourseMate.Models;
 using CourseMate.Models.Context;
+using CourseMate.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseMate.Repository
@@ -7,6 +8,7 @@ namespace CourseMate.Repository
     public interface IStudentRepository
     {
         Task<Student?> GetStudentById(Guid id);
+        Task<Student?> GetActiveStudentByEmail(string email);
         Task<IEnumerable<Student>> GetAllStudents();
         Task AddStudent(Student student);
         Task UpdateStudent(Student student);
@@ -21,6 +23,13 @@ namespace CourseMate.Repository
         public async Task<Student?> GetStudentById(Guid id)
         {
             return await _context.Students.FindAsync(id);
+        }
+
+        public async Task<Student?> GetActiveStudentByEmail(string email)
+        {
+            return await _context.Students
+                .Where(student => student.IsActive == (int)enumStatus.Active && !student.IsDeleted)
+                .FirstOrDefaultAsync(s => s.Email == email);
         }
 
         public async Task AddStudent(Student student)
