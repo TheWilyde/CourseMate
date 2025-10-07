@@ -10,6 +10,7 @@ namespace CourseMate.Services
     public interface IStudentRepositoryService
     {
         Task<ServiceResult<Student>> AddNewStudent(StudentDto? dto);
+        Task<ServiceResult<Student>> GetActiveStudentByEmail(string email);
     }
     public class StudentRepositoryService : IStudentRepositoryService
     {
@@ -51,6 +52,19 @@ namespace CourseMate.Services
 
             await _studentRepo.AddStudent(student);
             return ServiceResult<Student>.Success(student);
+        }
+
+        public async Task<ServiceResult<Student>> GetActiveStudentByEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return ServiceResult<Student>.Failure("Email must be provided.");
+
+            var student = await _studentRepo.GetActiveStudentByEmail(email);
+
+            if (student != null)
+                return ServiceResult<Student>.Success(student);
+            else
+                return ServiceResult<Student>.Failure("No active student found with the provided email.");
         }
     }
 
