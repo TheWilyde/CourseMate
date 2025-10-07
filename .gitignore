@@ -74,8 +74,6 @@ appsettings.*.json
 *.sqlite
 *.sqlite3
 
-# Entity Framework
-Migrations/
 
 # NuGet
 *.nupkg
