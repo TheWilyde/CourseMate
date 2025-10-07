@@ -3,8 +3,8 @@ using CourseMate.Models.Context;
 using CourseMate.Repository;
 using CourseMate.Services;
 //using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+//using Microsoft.IdentityModel.Tokens;
+//using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,6 +76,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
