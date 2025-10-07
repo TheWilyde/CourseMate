@@ -31,7 +31,7 @@ function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault(); // prevent default browser POST
 
-    const res = await fetch('/api/login', {
+    const res = await fetch('/api/Login/auth', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({email, password}),
@@ -40,6 +40,8 @@ function LoginForm() {
     if (res.ok) {
       console.log('Login successful');
       // handle redirect, token storage, etc.
+    } else if (res.status === 400) {
+      console.error('Invalid credentials');
     } else {
       console.error('Login failed');
     }
