@@ -17,7 +17,7 @@ namespace CourseMate.Controllers
         
 
         [HttpPost]
-        [Route("login")]
+        [Route("auth")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginDto)
         {
             if(!ModelState.IsValid)
