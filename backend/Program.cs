@@ -2,9 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using CourseMate.Models.Context;
 using CourseMate.Repository;
 using CourseMate.Services;
-//using Microsoft.AspNetCore.Authentication.JwtBearer;
-//using Microsoft.IdentityModel.Tokens;
-//using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +22,7 @@ builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAuthorizationRepositoryService, AuthorizationRepositoryService>();
 builder.Services.AddScoped<IAuthorizationRepository, AuthorizationRepository>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 //builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 //builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 //builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
@@ -43,28 +44,28 @@ builder.Services.AddCors(options =>
         });
 });
 
-//JWT config
-//var jwtSettings = builder.Configuration.GetSection("Jwt");
-//var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//})
-//.AddJwtBearer(options =>
-//{
-//    options.TokenValidationParameters = new TokenValidationParameters
-//    {
-//        ValidateIssuer = true,
-//        ValidateAudience = true,
-//        ValidateLifetime = true,
-//        ValidateIssuerSigningKey = true,
-//        ValidIssuer = jwtSettings["Issuer"],
-//        ValidAudience = jwtSettings["Audience"],
-//        IssuerSigningKey = new SymmetricSecurityKey(key)
-//    };
-//});
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 var app = builder.Build();
 
