@@ -38,12 +38,16 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") // your React dev URL (Vite)
+            policy.WithOrigins(
+                "http://localhost:5173",  // Vite default port
+                "http://localhost:5174"   // Alternative port if 5173 is in use
+            )
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
 });
 
+// JWT Authentication Configuration
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
