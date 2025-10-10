@@ -1,14 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CourseMate.Models
 {
     public class Admin : BaseModel
     {
         [Column(TypeName = "varchar(100)")]
-        public int Position { get; set; }  //ToDo: Enum for positions
+        public string Position { get; set; } = string.Empty;
 
-        [ForeignKey("Department")]
         public Guid DepartmentId { get; set; }
-        public Department Department { get; set; } = null!;
+        public Department Department { get; set; } = default!;
     }
 }

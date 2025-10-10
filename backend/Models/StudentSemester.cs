@@ -1,18 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CourseMate.Models
 {
     public class StudentSemester
     {
         [Key]
-        public Guid StudentSemesterId { get; set; }
+        public Guid StudentSemesterId { get; set; } = Guid.NewGuid();
 
-        [ForeignKey("Student")]
         public Guid StudentId { get; set; }
+        public Student Student { get; set; } = default!;
 
-        [ForeignKey("Semester")]
         public Guid SemesterId { get; set; }
+        public Semester Semester { get; set; } = default!;
 
         [Range(0, 4)]
         public decimal SGPA { get; set; }
@@ -20,8 +20,6 @@ namespace CourseMate.Models
         [Range(0, 4)]
         public decimal CGPA { get; set; }
 
-        // Navigation
-        public Student Student { get; set; } = null!;
-        public Semester Semester { get; set; } = null!;
+        public ICollection<StudentCourseGrade> StudentCourseGrades { get; set; } = new List<StudentCourseGrade>();
     }
 }

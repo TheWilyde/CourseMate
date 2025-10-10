@@ -4,10 +4,27 @@ namespace CourseMate.Models.Context
 {
     public class AppDbContext : DbContext
     {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+        public DbSet<Admin> Admins => Set<Admin>();
+        public DbSet<Instructor> Instructors => Set<Instructor>();
+        public DbSet<Student> Students => Set<Student>();
+        public DbSet<Course> Courses => Set<Course>();
+        public DbSet<CourseOffering> CourseOfferings => Set<CourseOffering>();
+        public DbSet<CoursePrerequisite> CoursePrerequisites => Set<CoursePrerequisite>();
+        public DbSet<Enrollment> Enrollments => Set<Enrollment>();
+        public DbSet<StudentSemester> StudentSemesters => Set<StudentSemester>();
+        public DbSet<StudentCourseGrade> StudentCourseGrades => Set<StudentCourseGrade>();
+        public DbSet<Semester> Semesters => Set<Semester>();
+        public DbSet<Degree> Degrees => Set<Degree>();
+        public DbSet<Department> Departments => Set<Department>();
+        public DbSet<Lecture> Lectures => Set<Lecture>();
+        public DbSet<GradeScale> GradeScales => Set<GradeScale>();
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure the self-referencing many-to-many relationship for Course ↔ Course
-            // DO NOT delete or comment this as this is crucial for EF Core to infer the relationship correctly.
+            // === CoursePrerequisite: self-referencing many-to-many (Course ↔ Course) ===
             modelBuilder.Entity<CoursePrerequisite>()
                 .HasOne(cp => cp.Course)
                 .WithMany(c => c.PrerequisiteCourses)
@@ -20,47 +37,84 @@ namespace CourseMate.Models.Context
                 .HasForeignKey(cp => cp.PrerequisiteId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            //  Lecture: Course ↔ Instructor ===
+            modelBuilder.Entity<Lecture>()
+                .HasOne(l => l.Course)
+                .WithMany(c => c.Lectures)
+                .HasForeignKey(l => l.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Lecture>()
+                .HasOne(l => l.Instructor)
+                .WithMany(i => i.Lectures)
+                .HasForeignKey(l => l.InstructorId)
+                .OnDelete(DeleteBehavior.Restrict); // safer than Cascade
+
+            // CourseOffering ↔ Course & Semester & Instructor ===
+            modelBuilder.Entity<CourseOffering>()
+                .HasOne(o => o.Course)
+                .WithMany(c => c.Offerings)
+                .HasForeignKey(o => o.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CourseOffering>()
+                .HasOne(o => o.Semester)
+                .WithMany(s => s.Offerings)
+                .HasForeignKey(o => o.SemesterId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CourseOffering>()
+                .HasOne(o => o.Instructor)
+                .WithMany(i => i.CourseOfferings)
+                .HasForeignKey(o => o.InstructorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Enrollment ↔ Student & CourseOffering ===
+            modelBuilder.Entity<Enrollment>()
+                .HasOne(e => e.Student)
+                .WithMany(s => s.Enrollments)
+                .HasForeignKey(e => e.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Enrollment>()
+                .HasOne(e => e.CourseOffering)
+                .WithMany(o => o.Enrollments)
+                .HasForeignKey(e => e.OfferingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // StudentSemester ↔ Student & Semester ===
+            modelBuilder.Entity<StudentSemester>()
+                .HasOne(ss => ss.Student)
+                .WithMany(s => s.StudentSemesters)
+                .HasForeignKey(ss => ss.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<StudentSemester>()
+                .HasOne(ss => ss.Semester)
+                .WithMany(s => s.StudentSemesters)
+                .HasForeignKey(ss => ss.SemesterId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // StudentCourseGrade ↔ StudentSemester, CourseOffering, Instructor ===
+            modelBuilder.Entity<StudentCourseGrade>()
+                .HasOne(scg => scg.StudentSemester)
+                .WithMany(ss => ss.StudentCourseGrades)
+                .HasForeignKey(scg => scg.StudentSemesterId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<StudentCourseGrade>()
+                .HasOne(scg => scg.CourseOffering)
+                .WithMany()
+                .HasForeignKey(scg => scg.CourseOfferingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StudentCourseGrade>()
+                .HasOne(scg => scg.Instructor)
+                .WithMany()
+                .HasForeignKey(scg => scg.InstructorId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             base.OnModelCreating(modelBuilder);
         }
-
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //modelBuilder.Entity<Admin>().HasData(
-        //    new Admin()
-        //    {
-        //        Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-        //        FirstName = "Super",
-        //        LastName = "Admin",
-        //        Email = "admin@yopmail.com",
-        //        Password = "123",  //password to be hashed yet.
-        //        PhoneNumber = "0333-8478333",
-        //        Role = (int)enumRole.Admin,
-        //        CreatedAt = DateTime.Now,
-        //        UpdatedAt = DateTime.Now,
-        //        IsActive = (int)enumStatus.Active,
-        //        DateOfBirth = new DateTime(2002, 10, 23),
-        //        Department = "Administration",
-        //        Address = "123 Admin St",
-        //        City = "Lahore",
-        //        State = "Admin State",
-        //        ZipCode = "54000",
-        //        Country = "Pakistan",
-        //        ProfilePictureUrl = null,
-        //        IsDeleted = false,
-        //        Position = (int)enumPosition.Admin
-        //    });
-
-        public DbSet<Admin> Admins { get; set; }
-        public DbSet<Instructor> Instructors { get; set; }
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Course> Courses { get; set; }
-        public DbSet<CourseOffering> CourseOfferings { get; set; }
-        public DbSet<Enrollment> Enrollments { get; set; }
-        public DbSet<Prerequisite> Prerequisites { get; set; }
-        public DbSet<StudentSemester> StudentSemesters { get; set; }
-        public DbSet<Semester> Semesters { get; set; }
-        public DbSet<GradeScale> Grades { get; set; }
-
     }
 }

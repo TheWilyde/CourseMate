@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CourseMate.Models
@@ -6,20 +8,20 @@ namespace CourseMate.Models
     public class CourseOffering
     {
         [Key]
-        public Guid OfferingId { get; set; }
+        public Guid OfferingId { get; set; } = Guid.NewGuid();
 
-        [ForeignKey("Course")]
         public Guid CourseId { get; set; }
+        public Course Course { get; set; } = default!;
 
-        [ForeignKey("Semester")]
         public Guid SemesterId { get; set; }
+        public Semester Semester { get; set; } = default!;
 
         [Range(1, 500)]
         public int Capacity { get; set; }
 
-        // Navigation
-        public Course Course { get; set; } = null!;
-        public Semester Semester { get; set; } = null!;
+        [ForeignKey(nameof(Instructor))]
+        public Guid? InstructorId { get; set; }
+        public Instructor? Instructor { get; set; }
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
 }

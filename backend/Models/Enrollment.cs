@@ -1,28 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CourseMate.Models
 {
     public class Enrollment
     {
         [Key]
-        public Guid EnrollmentId { get; set; }
+        public Guid EnrollmentId { get; set; } = Guid.NewGuid();
 
-        [ForeignKey("Student")]
         public Guid StudentId { get; set; }
+        public Student Student { get; set; } = default!;
 
-        [ForeignKey("CourseOffering")]
         public Guid OfferingId { get; set; }
+        public CourseOffering CourseOffering { get; set; } = default!;
 
         [Required, StringLength(20)]
-        public string Status { get; set; } = "Enrolled";
-        // Enrolled, Dropped, Completed
+        public string Status { get; set; } = "Enrolled"; // Enrolled, Dropped, Completed
 
         [StringLength(5)]
-        public string? Grade { get; set; } // FK → GradeScale (optional until completed)
-
-        // Navigation
-        public Student Student { get; set; } = null!;
-        public CourseOffering CourseOffering { get; set; } = null!;
+        public string? Grade { get; set; } // optional; link to GradeScale
     }
 }
