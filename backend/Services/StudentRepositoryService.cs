@@ -42,7 +42,7 @@ namespace CourseMate.Services
                 DateOfBirth = dto.DateOfBirth,
                 Major = dto.Major ?? string.Empty,
                 Year = dto.Year > 0 ? dto.Year : DateTime.Now.Year,
-                DepartmentID = dto.DepartmentId,
+                DepartmentId = dto.DepartmentId,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 IsDeleted = false,
