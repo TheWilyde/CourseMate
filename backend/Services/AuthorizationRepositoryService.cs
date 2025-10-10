@@ -1,6 +1,7 @@
 ﻿using CourseMate.Models;
 using CourseMate.Repository;
 using Microsoft.AspNetCore.Mvc;
+using CourseMate.Models.HelpingClasses;
 using CourseMate.Models.Helping_Classes;
 using CourseMate.Models.Enums;
 
@@ -9,7 +10,6 @@ namespace CourseMate.Services
     public interface IAuthorizationRepositoryService
     {
         Task<IActionResult> Login(string email, string password);
-        //Task<IActionResult> AuthorizeUser(Guid userId, string role);
     }
 
     public class AuthorizationRepositoryService : IAuthorizationRepositoryService

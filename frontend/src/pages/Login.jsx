@@ -37,6 +37,10 @@ function LoginForm() {
       body: JSON.stringify({email, password}),
     });
 
+    console.log('📥 Response status:', res.status);
+    const data = await res.text(); // Get response as text first
+    console.log('📥 Response data:', data);
+
     if (res.ok) {
       console.log('Login successful');
       // handle redirect, token storage, etc.
