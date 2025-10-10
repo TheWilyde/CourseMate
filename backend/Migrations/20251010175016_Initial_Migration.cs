@@ -6,13 +6,34 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CourseMate.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class Initial_Migration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Department",
+                name: "Degrees",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DegreeName = table.Column<string>(type: "text", nullable: false),
+                    DurationInYears = table.Column<short>(type: "smallint", nullable: false),
+                    TotalSemesters = table.Column<int>(type: "integer", nullable: false),
+                    CurrentSemester = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    IsSemesterSystem = table.Column<bool>(type: "boolean", nullable: false),
+                    TotalCredits = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Degrees", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Departments",
                 columns: table => new
                 {
                     DepartmentId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -21,20 +42,20 @@ namespace CourseMate.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Department", x => x.DepartmentId);
+                    table.PrimaryKey("PK_Departments", x => x.DepartmentId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Grades",
+                name: "GradeScales",
                 columns: table => new
                 {
                     GradeCode = table.Column<string>(type: "character varying(5)", maxLength: 5, nullable: false),
-                    GradePoints = table.Column<decimal>(type: "numeric", nullable: false),
-                    Description = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    Description = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    GradePoints = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Grades", x => x.GradeCode);
+                    table.PrimaryKey("PK_GradeScales", x => x.GradeCode);
                 });
 
             migrationBuilder.CreateTable(
@@ -43,8 +64,8 @@ namespace CourseMate.Migrations
                 {
                     SemesterId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -60,6 +81,7 @@ namespace CourseMate.Migrations
                     DepartmentId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     IsActive = table.Column<int>(type: "integer", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
@@ -80,9 +102,9 @@ namespace CourseMate.Migrations
                 {
                     table.PrimaryKey("PK_Admins", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Admins_Department_DepartmentId",
+                        name: "FK_Admins_Departments_DepartmentId",
                         column: x => x.DepartmentId,
-                        principalTable: "Department",
+                        principalTable: "Departments",
                         principalColumn: "DepartmentId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -92,20 +114,25 @@ namespace CourseMate.Migrations
                 columns: table => new
                 {
                     CourseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    Title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    Credits = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    CourseName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseCode = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    CreditHours = table.Column<int>(type: "integer", nullable: false),
+                    DegreeId = table.Column<Guid>(type: "uuid", nullable: false),
                     DepartmentId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Courses", x => x.CourseId);
                     table.ForeignKey(
-                        name: "FK_Courses_Department_DepartmentId",
+                        name: "FK_Courses_Degrees_DegreeId",
+                        column: x => x.DegreeId,
+                        principalTable: "Degrees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Courses_Departments_DepartmentId",
                         column: x => x.DepartmentId,
-                        principalTable: "Department",
+                        principalTable: "Departments",
                         principalColumn: "DepartmentId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -116,11 +143,12 @@ namespace CourseMate.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Designation = table.Column<string>(type: "varchar(100)", nullable: false),
-                    StartHours = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
-                    EndHours = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
-                    DepartmentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    StartHours = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
+                    EndHours = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
+                    DepartmentId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     IsActive = table.Column<int>(type: "integer", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
@@ -141,10 +169,11 @@ namespace CourseMate.Migrations
                 {
                     table.PrimaryKey("PK_Instructors", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Instructors_Department_DepartmentId",
+                        name: "FK_Instructors_Departments_DepartmentId",
                         column: x => x.DepartmentId,
-                        principalTable: "Department",
-                        principalColumn: "DepartmentId");
+                        principalTable: "Departments",
+                        principalColumn: "DepartmentId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -154,9 +183,11 @@ namespace CourseMate.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Major = table.Column<string>(type: "varchar(100)", nullable: false),
                     Year = table.Column<int>(type: "integer", nullable: false),
-                    DepartmentID = table.Column<Guid>(type: "uuid", nullable: false),
+                    DepartmentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DegreeId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     IsActive = table.Column<int>(type: "integer", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
@@ -177,11 +208,42 @@ namespace CourseMate.Migrations
                 {
                     table.PrimaryKey("PK_Students", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Students_Department_DepartmentID",
-                        column: x => x.DepartmentID,
-                        principalTable: "Department",
+                        name: "FK_Students_Degrees_DegreeId",
+                        column: x => x.DegreeId,
+                        principalTable: "Degrees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Students_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
                         principalColumn: "DepartmentId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CoursePrerequisites",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PrerequisiteId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CoursePrerequisites", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CoursePrerequisites_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CoursePrerequisites_Courses_PrerequisiteId",
+                        column: x => x.PrerequisiteId,
+                        principalTable: "Courses",
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -191,7 +253,8 @@ namespace CourseMate.Migrations
                     OfferingId = table.Column<Guid>(type: "uuid", nullable: false),
                     CourseId = table.Column<Guid>(type: "uuid", nullable: false),
                     SemesterId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Capacity = table.Column<int>(type: "integer", nullable: false)
+                    Capacity = table.Column<int>(type: "integer", nullable: false),
+                    InstructorId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -203,6 +266,12 @@ namespace CourseMate.Migrations
                         principalColumn: "CourseId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_CourseOfferings_Instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_CourseOfferings_Semesters_SemesterId",
                         column: x => x.SemesterId,
                         principalTable: "Semesters",
@@ -211,53 +280,30 @@ namespace CourseMate.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CoursePrerequisite",
+                name: "Lectures",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    LectureId = table.Column<Guid>(type: "uuid", nullable: false),
                     CourseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PrerequisiteId = table.Column<Guid>(type: "uuid", nullable: false)
+                    InstructorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LectureTopic = table.Column<string>(type: "text", nullable: true),
+                    LectureDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CoursePrerequisite", x => x.Id);
+                    table.PrimaryKey("PK_Lectures", x => x.LectureId);
                     table.ForeignKey(
-                        name: "FK_CoursePrerequisite_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "CourseId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CoursePrerequisite_Courses_PrerequisiteId",
-                        column: x => x.PrerequisiteId,
-                        principalTable: "Courses",
-                        principalColumn: "CourseId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Prerequisites",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CourseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PrereqId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Prerequisites", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Prerequisites_Courses_CourseId",
+                        name: "FK_Lectures_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "CourseId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Prerequisites_Courses_PrereqId",
-                        column: x => x.PrereqId,
-                        principalTable: "Courses",
-                        principalColumn: "CourseId",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Lectures_Instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -314,6 +360,41 @@ namespace CourseMate.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "StudentCourseGrades",
+                columns: table => new
+                {
+                    StudentCourseGradeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StudentSemesterId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CourseOfferingId = table.Column<Guid>(type: "uuid", nullable: false),
+                    InstructorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Grade = table.Column<string>(type: "character varying(5)", maxLength: 5, nullable: true),
+                    GradePoints = table.Column<decimal>(type: "numeric", nullable: true),
+                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentCourseGrades", x => x.StudentCourseGradeId);
+                    table.ForeignKey(
+                        name: "FK_StudentCourseGrades_CourseOfferings_CourseOfferingId",
+                        column: x => x.CourseOfferingId,
+                        principalTable: "CourseOfferings",
+                        principalColumn: "OfferingId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StudentCourseGrades_Instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_StudentCourseGrades_StudentSemesters_StudentSemesterId",
+                        column: x => x.StudentSemesterId,
+                        principalTable: "StudentSemesters",
+                        principalColumn: "StudentSemesterId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Admins_DepartmentId",
                 table: "Admins",
@@ -325,19 +406,29 @@ namespace CourseMate.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CourseOfferings_InstructorId",
+                table: "CourseOfferings",
+                column: "InstructorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CourseOfferings_SemesterId",
                 table: "CourseOfferings",
                 column: "SemesterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CoursePrerequisite_CourseId",
-                table: "CoursePrerequisite",
+                name: "IX_CoursePrerequisites_CourseId",
+                table: "CoursePrerequisites",
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CoursePrerequisite_PrerequisiteId",
-                table: "CoursePrerequisite",
+                name: "IX_CoursePrerequisites_PrerequisiteId",
+                table: "CoursePrerequisites",
                 column: "PrerequisiteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Courses_DegreeId",
+                table: "Courses",
+                column: "DegreeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Courses_DepartmentId",
@@ -360,19 +451,39 @@ namespace CourseMate.Migrations
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Prerequisites_CourseId",
-                table: "Prerequisites",
+                name: "IX_Lectures_CourseId",
+                table: "Lectures",
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Prerequisites_PrereqId",
-                table: "Prerequisites",
-                column: "PrereqId");
+                name: "IX_Lectures_InstructorId",
+                table: "Lectures",
+                column: "InstructorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Students_DepartmentID",
+                name: "IX_StudentCourseGrades_CourseOfferingId",
+                table: "StudentCourseGrades",
+                column: "CourseOfferingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentCourseGrades_InstructorId",
+                table: "StudentCourseGrades",
+                column: "InstructorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentCourseGrades_StudentSemesterId",
+                table: "StudentCourseGrades",
+                column: "StudentSemesterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Students_DegreeId",
                 table: "Students",
-                column: "DepartmentID");
+                column: "DegreeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Students_DepartmentId",
+                table: "Students",
+                column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudentSemesters_SemesterId",
@@ -392,37 +503,43 @@ namespace CourseMate.Migrations
                 name: "Admins");
 
             migrationBuilder.DropTable(
-                name: "CoursePrerequisite");
+                name: "CoursePrerequisites");
 
             migrationBuilder.DropTable(
                 name: "Enrollments");
 
             migrationBuilder.DropTable(
-                name: "Grades");
+                name: "GradeScales");
 
             migrationBuilder.DropTable(
-                name: "Instructors");
+                name: "Lectures");
 
             migrationBuilder.DropTable(
-                name: "Prerequisites");
-
-            migrationBuilder.DropTable(
-                name: "StudentSemesters");
+                name: "StudentCourseGrades");
 
             migrationBuilder.DropTable(
                 name: "CourseOfferings");
 
             migrationBuilder.DropTable(
-                name: "Students");
+                name: "StudentSemesters");
 
             migrationBuilder.DropTable(
                 name: "Courses");
 
             migrationBuilder.DropTable(
+                name: "Instructors");
+
+            migrationBuilder.DropTable(
                 name: "Semesters");
 
             migrationBuilder.DropTable(
-                name: "Department");
+                name: "Students");
+
+            migrationBuilder.DropTable(
+                name: "Degrees");
+
+            migrationBuilder.DropTable(
+                name: "Departments");
         }
     }
 }

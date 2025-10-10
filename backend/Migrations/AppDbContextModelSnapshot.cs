@@ -43,6 +43,9 @@ namespace CourseMate.Migrations
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("DepartmentId")
                         .HasColumnType("uuid");
 
@@ -105,32 +108,28 @@ namespace CourseMate.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<int>("Credits")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("DepartmentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Status")
+                    b.Property<string>("CourseCode")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
-                    b.Property<string>("Title")
+                    b.Property<string>("CourseName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<int>("CreditHours")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("DegreeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("CourseId");
+
+                    b.HasIndex("DegreeId");
 
                     b.HasIndex("DepartmentId");
 
@@ -149,12 +148,17 @@ namespace CourseMate.Migrations
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("InstructorId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("SemesterId")
                         .HasColumnType("uuid");
 
                     b.HasKey("OfferingId");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("InstructorId");
 
                     b.HasIndex("SemesterId");
 
@@ -179,7 +183,49 @@ namespace CourseMate.Migrations
 
                     b.HasIndex("PrerequisiteId");
 
-                    b.ToTable("CoursePrerequisite");
+                    b.ToTable("CoursePrerequisites");
+                });
+
+            modelBuilder.Entity("CourseMate.Models.Degree", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CurrentSemester")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DegreeName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<short>("DurationInYears")
+                        .HasColumnType("smallint");
+
+                    b.Property<bool>("IsSemesterSystem")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalCredits")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalSemesters")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Degrees");
                 });
 
             modelBuilder.Entity("CourseMate.Models.Department", b =>
@@ -199,7 +245,7 @@ namespace CourseMate.Migrations
 
                     b.HasKey("DepartmentId");
 
-                    b.ToTable("Department");
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("CourseMate.Models.Enrollment", b =>
@@ -248,7 +294,7 @@ namespace CourseMate.Migrations
 
                     b.HasKey("GradeCode");
 
-                    b.ToTable("Grades");
+                    b.ToTable("GradeScales");
                 });
 
             modelBuilder.Entity("CourseMate.Models.Instructor", b =>
@@ -272,7 +318,10 @@ namespace CourseMate.Migrations
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("DepartmentId")
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("DepartmentId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Designation")
@@ -283,7 +332,7 @@ namespace CourseMate.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.Property<TimeOnly>("EndHours")
+                    b.Property<TimeOnly?>("EndHours")
                         .HasColumnType("time without time zone");
 
                     b.Property<string>("FirstName")
@@ -315,7 +364,7 @@ namespace CourseMate.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
-                    b.Property<TimeOnly>("StartHours")
+                    b.Property<TimeOnly?>("StartHours")
                         .HasColumnType("time without time zone");
 
                     b.Property<string>("State")
@@ -334,25 +383,31 @@ namespace CourseMate.Migrations
                     b.ToTable("Instructors");
                 });
 
-            modelBuilder.Entity("CourseMate.Models.Prerequisite", b =>
+            modelBuilder.Entity("CourseMate.Models.Lecture", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("LectureId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("PrereqId")
+                    b.Property<Guid>("InstructorId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime?>("LectureDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LectureTopic")
+                        .HasColumnType("text");
+
+                    b.HasKey("LectureId");
 
                     b.HasIndex("CourseId");
 
-                    b.HasIndex("PrereqId");
+                    b.HasIndex("InstructorId");
 
-                    b.ToTable("Prerequisites");
+                    b.ToTable("Lectures");
                 });
 
             modelBuilder.Entity("CourseMate.Models.Semester", b =>
@@ -361,7 +416,7 @@ namespace CourseMate.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
@@ -369,7 +424,7 @@ namespace CourseMate.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("SemesterId");
@@ -398,7 +453,13 @@ namespace CourseMate.Migrations
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("DepartmentID")
+                    b.Property<Guid>("DegreeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("DepartmentId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Email")
@@ -452,9 +513,48 @@ namespace CourseMate.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentID");
+                    b.HasIndex("DegreeId");
+
+                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("CourseMate.Models.StudentCourseGrade", b =>
+                {
+                    b.Property<Guid>("StudentCourseGradeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CourseOfferingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Grade")
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<decimal?>("GradePoints")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid?>("InstructorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid>("StudentSemesterId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("StudentCourseGradeId");
+
+                    b.HasIndex("CourseOfferingId");
+
+                    b.HasIndex("InstructorId");
+
+                    b.HasIndex("StudentSemesterId");
+
+                    b.ToTable("StudentCourseGrades");
                 });
 
             modelBuilder.Entity("CourseMate.Models.StudentSemester", b =>
@@ -497,11 +597,21 @@ namespace CourseMate.Migrations
 
             modelBuilder.Entity("CourseMate.Models.Course", b =>
                 {
-                    b.HasOne("CourseMate.Models.Department", null)
+                    b.HasOne("CourseMate.Models.Degree", "Degree")
+                        .WithMany("Courses")
+                        .HasForeignKey("DegreeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CourseMate.Models.Department", "Department")
                         .WithMany("Courses")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Degree");
+
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("CourseMate.Models.CourseOffering", b =>
@@ -512,6 +622,11 @@ namespace CourseMate.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CourseMate.Models.Instructor", "Instructor")
+                        .WithMany("CourseOfferings")
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("CourseMate.Models.Semester", "Semester")
                         .WithMany("Offerings")
                         .HasForeignKey("SemesterId")
@@ -519,6 +634,8 @@ namespace CourseMate.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
+
+                    b.Navigation("Instructor");
 
                     b.Navigation("Semester");
                 });
@@ -551,7 +668,7 @@ namespace CourseMate.Migrations
                         .IsRequired();
 
                     b.HasOne("CourseMate.Models.Student", "Student")
-                        .WithMany()
+                        .WithMany("Enrollments")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -563,39 +680,77 @@ namespace CourseMate.Migrations
 
             modelBuilder.Entity("CourseMate.Models.Instructor", b =>
                 {
-                    b.HasOne("CourseMate.Models.Department", null)
-                        .WithMany("Instructors")
-                        .HasForeignKey("DepartmentId");
-                });
-
-            modelBuilder.Entity("CourseMate.Models.Prerequisite", b =>
-                {
-                    b.HasOne("CourseMate.Models.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CourseMate.Models.Course", "PrereqCourse")
-                        .WithMany()
-                        .HasForeignKey("PrereqId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("PrereqCourse");
-                });
-
-            modelBuilder.Entity("CourseMate.Models.Student", b =>
-                {
                     b.HasOne("CourseMate.Models.Department", "Department")
-                        .WithMany("Students")
-                        .HasForeignKey("DepartmentID")
+                        .WithMany("Instructors")
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("CourseMate.Models.Lecture", b =>
+                {
+                    b.HasOne("CourseMate.Models.Course", "Course")
+                        .WithMany("Lectures")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CourseMate.Models.Instructor", "Instructor")
+                        .WithMany("Lectures")
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Instructor");
+                });
+
+            modelBuilder.Entity("CourseMate.Models.Student", b =>
+                {
+                    b.HasOne("CourseMate.Models.Degree", "Degree")
+                        .WithMany("Students")
+                        .HasForeignKey("DegreeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CourseMate.Models.Department", "Department")
+                        .WithMany("Students")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Degree");
+
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("CourseMate.Models.StudentCourseGrade", b =>
+                {
+                    b.HasOne("CourseMate.Models.CourseOffering", "CourseOffering")
+                        .WithMany()
+                        .HasForeignKey("CourseOfferingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CourseMate.Models.Instructor", "Instructor")
+                        .WithMany()
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CourseMate.Models.StudentSemester", "StudentSemester")
+                        .WithMany("StudentCourseGrades")
+                        .HasForeignKey("StudentSemesterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CourseOffering");
+
+                    b.Navigation("Instructor");
+
+                    b.Navigation("StudentSemester");
                 });
 
             modelBuilder.Entity("CourseMate.Models.StudentSemester", b =>
@@ -607,7 +762,7 @@ namespace CourseMate.Migrations
                         .IsRequired();
 
                     b.HasOne("CourseMate.Models.Student", "Student")
-                        .WithMany()
+                        .WithMany("StudentSemesters")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -621,6 +776,8 @@ namespace CourseMate.Migrations
                 {
                     b.Navigation("IsPrerequisiteFor");
 
+                    b.Navigation("Lectures");
+
                     b.Navigation("Offerings");
 
                     b.Navigation("PrerequisiteCourses");
@@ -629,6 +786,13 @@ namespace CourseMate.Migrations
             modelBuilder.Entity("CourseMate.Models.CourseOffering", b =>
                 {
                     b.Navigation("Enrollments");
+                });
+
+            modelBuilder.Entity("CourseMate.Models.Degree", b =>
+                {
+                    b.Navigation("Courses");
+
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("CourseMate.Models.Department", b =>
@@ -642,11 +806,30 @@ namespace CourseMate.Migrations
                     b.Navigation("Students");
                 });
 
+            modelBuilder.Entity("CourseMate.Models.Instructor", b =>
+                {
+                    b.Navigation("CourseOfferings");
+
+                    b.Navigation("Lectures");
+                });
+
             modelBuilder.Entity("CourseMate.Models.Semester", b =>
                 {
                     b.Navigation("Offerings");
 
                     b.Navigation("StudentSemesters");
+                });
+
+            modelBuilder.Entity("CourseMate.Models.Student", b =>
+                {
+                    b.Navigation("Enrollments");
+
+                    b.Navigation("StudentSemesters");
+                });
+
+            modelBuilder.Entity("CourseMate.Models.StudentSemester", b =>
+                {
+                    b.Navigation("StudentCourseGrades");
                 });
 #pragma warning restore 612, 618
         }
