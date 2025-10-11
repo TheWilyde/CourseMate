@@ -2,6 +2,7 @@
 using CourseMate.Models;
 using CourseMate.Models.Enums;
 using Microsoft.EntityFrameworkCore;
+using CourseMate.Models.Dtos;
 
 namespace CourseMate.Repository
 {
@@ -26,6 +27,22 @@ namespace CourseMate.Repository
             return await _context.Admins
                 .Where (admin => admin.IsActive == (int)enumStatus.Active && !admin.IsDeleted)
                 .FirstOrDefaultAsync(a => a.Email == email);
+        }
+
+        public async Task<Admin?> GetAdminByEmail(string EnteredEmail)
+        {
+            return await _context.Admins
+                .Where(admin => admin.IsActive == (int)enumStatus.Active && !admin.IsDeleted 
+                                                            && admin.Email == EnteredEmail)
+                .Select(admin => new Admin
+                {
+                    Id = admin.Id,
+                    FirstName = admin.FirstName,
+                    LastName = admin.LastName,
+                    Role = (int)enumRole.Admin,
+                    Email = admin.Email
+                })
+                .FirstOrDefaultAsync();
         }
     }
 }

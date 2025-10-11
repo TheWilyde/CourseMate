@@ -1,6 +1,6 @@
 @CourseMate_HostAddress = http://localhost:5219
 
-GET {{CourseMate_HostAddress}}/api/login/auth
+POST {{CourseMate_HostAddress}}/api/Login/auth
 Accept: application/json
 
 ###

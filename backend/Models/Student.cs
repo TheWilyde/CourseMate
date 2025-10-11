@@ -7,7 +7,7 @@ namespace CourseMate.Models
     public class Student : BaseModel
     {
         [Column(TypeName = "varchar(100)")]
-        public string Major { get; set; } = string.Empty;
+        public string? Major { get; set; } = string.Empty;
 
         public int Year { get; set; } = DateTime.UtcNow.Year;
 
