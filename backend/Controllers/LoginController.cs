@@ -1,4 +1,7 @@
-﻿using CourseMate.Models.Dtos;
+﻿using Microsoft.AspNetCore.Mvc;
+using CourseMate.Models.Helping_Classes;
+using CourseMate.Services;
+using CourseMate.Models.Dtos;
 using CourseMate.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,22 +12,21 @@ namespace CourseMate.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IAuthorizationRepositoryService _authService;
+
         public LoginController(IAuthorizationRepositoryService authService)
         {
             _authService = authService;
         }
 
-        [HttpPost]
-        [Route("auth")]
+        [HttpPost("auth")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginDto)
         {
-            if (!ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(loginDto.Email) || string.IsNullOrWhiteSpace(loginDto.Password))
             {
-                return BadRequest("Invalid data.");
+                return BadRequest("Email and password are required.");
             }
 
             var result = await _authService.Login(loginDto.Email, loginDto.Password);
-            
             return result;
         }
     }

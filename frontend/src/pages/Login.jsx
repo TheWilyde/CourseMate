@@ -27,25 +27,69 @@ export default Login;
 function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // prevent default browser POST
 
-    const res = await fetch('/api/Login/auth', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({email, password}),
-    });
+    try {
+      const res = await fetch('/api/Login/auth', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, password}),
+      });
 
-    if (res.ok) {
-      console.log('Login successful');
-      // handle redirect, token storage, etc.
-    } else if (res.status === 400) {
-      console.error('Invalid credentials');
-    } else {
-      console.error('Login failed');
+      const data = await res.text();
+
+      if (res.ok) {
+        const loginData = JSON.parse(data);
+        const {Token, Role, User} = loginData;
+        const storage = rememberMe ? localStorage : sessionStorage;
+
+        storage.setItem('authToken', Token);
+        storage.setItem('userRole', Role);
+        storage.setItem('userEmail', User.Email);
+        storage.setItem('userId', User.Id);
+        storage.setItem('userName', `${User.FirstName} ${User.LastName}`);
+
+        storage.setItem('user', JSON.stringify(User));
+
+        redirectToDashboard(Role);
+
+        console.log('Login successful!');
+        console.log(
+          'Token stored in: ',
+          rememberMe ? 'localStorage' : 'sessionStorage'
+        );
+      } else if (res.status === 401) {
+        console.error('Invalid credentials');
+      } else if (res.status === 400) {
+        console.error('Bad request:', data);
+      } else {
+        console.error('Login failed:', data);
+      }
+    } catch (err) {
+      console.error('Network error:', err);
     }
   };
+
+  const redirectToDashboard = (role) => {
+    // Redirect to appropriate dashboard based on role
+    switch (role) {
+      case 'Student':
+        window.location.href = '/student/dashboard';
+        break;
+      case 'Instructor':
+        window.location.href = '/instructor/dashboard';
+        break;
+      case 'Admin':
+        window.location.href = '/admin/dashboard';
+        break;
+      default:
+        console.error('Unknown role:', role);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="w-full h-full flex flex-col gap-4">
       <Input
@@ -64,7 +108,12 @@ function LoginForm() {
       />
       <div className="flex items-center gap-2">
         <label className="relative inline-block w-10 h-6 ">
-          <input type="checkbox" className="absolute opacity-0 w-0 h-0 peer" />
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="absolute opacity-0 w-0 h-0 peer"
+          />
           <span
             className="border-none absolute inset-0 cursor-pointer rounded-full bg-gray-300 transition-colors duration-300
            peer-checked:bg-teal 
