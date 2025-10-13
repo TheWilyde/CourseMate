@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using CourseMate.Models.Helping_Classes;
+using CourseMate.Models.HelpingClasses;
 using CourseMate.Services;
 using CourseMate.Models.Dtos;
-using CourseMate.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CourseMate.Controllers
 {
@@ -26,7 +24,7 @@ namespace CourseMate.Controllers
                 return BadRequest("Email and password are required.");
             }
 
-            var result = await _authService.Login(loginDto.Email, loginDto.Password);
+            var result = await _authService.Login(loginDto);
             return result;
         }
     }

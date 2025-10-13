@@ -66,6 +66,20 @@ namespace CourseMate.Services
             else
                 return ServiceResult<Student>.Failure("No active student found with the provided email.");
         }
+
+
+        public async Task<ServiceResult<Student>> UpdateStudentGraduationStatus(StudentDto studentDto)
+        {
+            var student = await _studentRepo.GetStudentById(studentDto.Id);
+
+            if (student == null)
+                return ServiceResult<Student>.Failure("Student not found.");
+
+            await _studentRepo.UpdateStudentGraduationStatus(student, studentDto.SetIsGraduatedStatus);
+
+            return ServiceResult<Student>.Success(student);
+        }
+
     }
 
 }
