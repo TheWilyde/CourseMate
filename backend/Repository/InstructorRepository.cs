@@ -10,6 +10,7 @@ namespace CourseMate.Repository
     {
         public Task<Instructor?> GetInstructorById(Guid Id);
         public Task<Instructor?> GetActiveInstructorByEmail(string email);
+        public Task<Instructor?> SignUpInstructor(Instructor instructor);
     }
 
     public class InstructorRepository : IInstructorRepository 
@@ -27,6 +28,13 @@ namespace CourseMate.Repository
             return await _context.Instructors
                 .Where(instructor => instructor.IsActive == 1 && !instructor.IsDeleted)
                 .FirstOrDefaultAsync(i => i.Email == email);
+        }
+
+        public async Task<Instructor?> SignUpInstructor(Instructor instructor)
+        {
+            await _context.Instructors.AddAsync(instructor);
+            await _context.SaveChangesAsync();
+            return instructor;
         }
     }
 }

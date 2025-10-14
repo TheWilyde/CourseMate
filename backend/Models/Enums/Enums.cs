@@ -1,11 +1,11 @@
 ﻿namespace CourseMate.Models.Enums
 {
-public enum enumRole
-{
-    Admin = 1,
-    Instructor = 2,
-    Student = 3,
-    Guest = 4
+    public enum enumRole
+    {
+        Admin = 1,
+        Instructor = 2,
+        Student = 3,
+        Guest = 4
     }
 
     public enum enumMajor
@@ -46,4 +46,28 @@ public enum enumRole
         Deleted = 3
     }
 
+
+    public enum enumEnrollmentStatus
+    {
+        Enrolled = 1,
+        Completed = 2,
+        Dropped = 3,
+        Failed = 4,
+        Withdrawn = 5
+    }
+
+    public enum enumCourseLevel
+    {
+        Undergraduate = 1,
+        Graduate = 2,
+        PostGraduate = 3
+    }
+
+    public enum enumCourseType
+    {
+        Core = 1,
+        Elective = 2,
+        Mandatory = 3,
+        Optional = 4
+    }
 }

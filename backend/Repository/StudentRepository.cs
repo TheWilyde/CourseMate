@@ -1,5 +1,6 @@
 ﻿using CourseMate.Models;
 using CourseMate.Models.Context;
+using CourseMate.Models.Dtos;
 using CourseMate.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,8 +11,9 @@ namespace CourseMate.Repository
         Task<Student?> GetStudentById(Guid id);
         Task<Student?> GetActiveStudentByEmail(string email);
         Task<IEnumerable<Student>> GetAllStudents();
-        Task AddStudent(Student student);
+        Task SignUpStudent(Student student);
         Task UpdateStudent(Student student);
+        Task<Student?> UpdateStudentGraduationStatus(Student student, bool isGraduated);
         Task DeleteStudent(Guid id);
     }
 
@@ -32,7 +34,7 @@ namespace CourseMate.Repository
                 .FirstOrDefaultAsync(s => s.Email == email);
         }
 
-        public async Task AddStudent(Student student)
+        public async Task SignUpStudent(Student student)
         {
             await _context.Students.AddAsync(student);
             await _context.SaveChangesAsync();
@@ -57,6 +59,15 @@ namespace CourseMate.Repository
                 _context.Students.Remove(student);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<Student?> UpdateStudentGraduationStatus(Student student, bool isGraduated)
+        {
+            student.IsGraduated = isGraduated;
+            student.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return student;
         }
     }
 }

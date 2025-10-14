@@ -32,6 +32,8 @@ namespace CourseMate.Models.Dtos
         public Guid EnrollmentId { get; set; }
         public int Role { get; set; }
 
+        public bool SetIsGraduatedStatus { get; set; }
+
         public string Major { get; set; } = string.Empty;
         public int Year { get; set; } = DateTime.Now.Year;
     }

@@ -11,6 +11,8 @@ namespace CourseMate.Services
     {
         Task<ServiceResult<Student>> AddNewStudent(StudentDto? dto);
         Task<ServiceResult<Student>> GetActiveStudentByEmail(string email);
+        Task<ServiceResult<Student>> UpdateStudentGraduationStatus(StudentDto studentDto);
+        Task<ServiceResult<Student>> GetStudentEnrolledCourses(StudentDto studentDto);
     }
     public class StudentRepositoryService : IStudentRepositoryService
     {
@@ -41,7 +43,7 @@ namespace CourseMate.Services
                 PhoneNumber = dto.PhoneNumber ?? string.Empty,
                 DateOfBirth = dto.DateOfBirth,
                 Major = dto.Major ?? string.Empty,
-                Year = dto.Year > 0 ? dto.Year : DateTime.Now.Year,
+                Year = dto.Year > 16 ? dto.Year : DateTime.Now.Year,
                 DepartmentId = dto.DepartmentId,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
@@ -50,7 +52,7 @@ namespace CourseMate.Services
                 Role = dto.Role
             };
 
-            await _studentRepo.AddStudent(student);
+            await _studentRepo.SignUpStudent(student);
             return ServiceResult<Student>.Success(student);
         }
 
@@ -67,6 +69,10 @@ namespace CourseMate.Services
                 return ServiceResult<Student>.Failure("No active student found with the provided email.");
         }
 
+        public Task<ServiceResult<Student>> GetStudentEnrolledCourses(StudentDto studentDto)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<ServiceResult<Student>> UpdateStudentGraduationStatus(StudentDto studentDto)
         {
@@ -79,6 +85,8 @@ namespace CourseMate.Services
 
             return ServiceResult<Student>.Success(student);
         }
+
+
 
     }
 

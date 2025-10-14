@@ -72,9 +72,10 @@ namespace CourseMate.Services
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         DepartmentId = Guid.Empty, // TODO: Get from DTO or default
-                        DegreeId = Guid.Empty // TODO: Get from DTO or default
+                        DegreeId = Guid.Empty, // TODO: Get from DTO or default
+                        IsGraduated = false
                     };
-                    await _studentRepo.AddStudent(student);
+                    await _studentRepo.SignUpStudent(student);
                     return student;
                 }
             },
@@ -99,8 +100,8 @@ namespace CourseMate.Services
                         UpdatedAt = DateTime.UtcNow,
                         DepartmentId = Guid.Empty // TODO: Get from DTO or default
                     };
-                    // TODO: Uncomment when AddInstructor is implemented
-                    // await _instructorRepo.AddInstructor(instructor);
+                    
+                    await _instructorRepo.SignUpInstructor(instructor);
                     return instructor;
                 }
             }

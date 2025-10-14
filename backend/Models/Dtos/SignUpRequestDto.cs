@@ -12,13 +12,12 @@ namespace CourseMate.Models.Dtos
         [DataType(DataType.Text)]
         public required string LastName { get; set; }
 
-
         [Required]
         [DataType(DataType.EmailAddress)]
         public required string Email { get; set; }
 
         [Required]
-        [DataType(DataType.Password)]
+        [DataType(DataType.Password), MinLength(8)]
         public required string Password { get; set; }
 
         [Required]
@@ -29,6 +28,11 @@ namespace CourseMate.Models.Dtos
         [DataType(DataType.Date)]
         public required DateTime DateOfBirth { get; set; }
 
+        // Student-specific fields
+        public string? Major { get; set; }
+        public int? Year { get; set; }
 
+        // Instructor-specific fields
+        public string? Designation { get; set; }
     }
 }
