@@ -19,7 +19,8 @@ namespace CourseMate.Models.Context
         public DbSet<Degree> Degrees => Set<Degree>();
         public DbSet<Department> Departments => Set<Department>();
         public DbSet<Lecture> Lectures => Set<Lecture>();
-        public DbSet<GradeScale> GradeScales => Set<GradeScale>();
+        public DbSet<GradeScale> GradeScales => Set<GradeScale>(); 
+        public DbSet<UserRole> UserRoles => Set<UserRole>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -113,6 +114,50 @@ namespace CourseMate.Models.Context
                 .WithMany()
                 .HasForeignKey(scg => scg.InstructorId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Seed UserRoles data
+            modelBuilder.Entity<UserRole>().HasData(
+
+                // DateTime set to static becasue of EF Constraints
+                new UserRole 
+                { 
+                    Id = 1, 
+                    RoleName = "Student", 
+                    EmailDomain = "@student.coursemate.com",
+                    Description = "Student role with access to courses and grades",
+                    CanSelfRegister = true,
+                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    IsActive = true
+                },
+                new UserRole
+                { 
+                    Id = 2, 
+                    RoleName = "Instructor", 
+                    EmailDomain = "@instructor.coursemate.com",
+                    Description = "Instructor role with access to teaching tools",
+                    CanSelfRegister = true,
+                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    IsActive = true
+                },
+                new UserRole 
+                { 
+                    Id = 3, 
+                    RoleName = "Admin", 
+                    EmailDomain = "@coursemate.com",
+                    Description = "Administrator with full system access",
+                    CanSelfRegister = false,
+                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    IsActive = true
+                }
+            );
+
+            // Add unique constraint on EmailDomain
+            modelBuilder.Entity<UserRole>()
+                .HasIndex(ur => ur.EmailDomain)
+                .IsUnique();
 
             base.OnModelCreating(modelBuilder);
         }

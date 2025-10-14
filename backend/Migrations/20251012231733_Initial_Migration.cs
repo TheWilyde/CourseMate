@@ -1,7 +1,10 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
+
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
 namespace CourseMate.Migrations
 {
@@ -70,6 +73,25 @@ namespace CourseMate.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Semesters", x => x.SemesterId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRoles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RoleName = table.Column<string>(type: "varchar(50)", nullable: false),
+                    Description = table.Column<string>(type: "varchar(255)", nullable: true),
+                    EmailDomain = table.Column<string>(type: "varchar(100)", nullable: false),
+                    CanSelfRegister = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -181,7 +203,7 @@ namespace CourseMate.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Major = table.Column<string>(type: "varchar(100)", nullable: false),
+                    Major = table.Column<string>(type: "varchar(100)", nullable: true),
                     Year = table.Column<int>(type: "integer", nullable: false),
                     DepartmentId = table.Column<Guid>(type: "uuid", nullable: false),
                     DegreeId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -395,6 +417,16 @@ namespace CourseMate.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "UserRoles",
+                columns: new[] { "Id", "CanSelfRegister", "CreatedAt", "Description", "EmailDomain", "IsActive", "RoleName", "UpdatedAt" },
+                values: new object[,]
+                {
+                    { 1, true, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Student role with access to courses and grades", "@student.coursemate.com", true, "Student", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) },
+                    { 2, true, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Instructor role with access to teaching tools", "@instructor.coursemate.com", true, "Instructor", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) },
+                    { 3, false, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Administrator with full system access", "@coursemate.com", true, "Admin", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Admins_DepartmentId",
                 table: "Admins",
@@ -494,6 +526,12 @@ namespace CourseMate.Migrations
                 name: "IX_StudentSemesters_StudentId",
                 table: "StudentSemesters",
                 column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_EmailDomain",
+                table: "UserRoles",
+                column: "EmailDomain",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -516,6 +554,9 @@ namespace CourseMate.Migrations
 
             migrationBuilder.DropTable(
                 name: "StudentCourseGrades");
+
+            migrationBuilder.DropTable(
+                name: "UserRoles");
 
             migrationBuilder.DropTable(
                 name: "CourseOfferings");

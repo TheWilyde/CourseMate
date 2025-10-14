@@ -481,7 +481,6 @@ namespace CourseMate.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.Property<string>("Major")
-                        .IsRequired()
                         .HasColumnType("varchar(100)");
 
                     b.Property<string>("Password")
@@ -582,6 +581,80 @@ namespace CourseMate.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("StudentSemesters");
+                });
+
+            modelBuilder.Entity("CourseMate.Models.UserRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("CanSelfRegister")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("EmailDomain")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailDomain")
+                        .IsUnique();
+
+                    b.ToTable("UserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CanSelfRegister = true,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Student role with access to courses and grades",
+                            EmailDomain = "@student.coursemate.com",
+                            IsActive = true,
+                            RoleName = "Student",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CanSelfRegister = true,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Instructor role with access to teaching tools",
+                            EmailDomain = "@instructor.coursemate.com",
+                            IsActive = true,
+                            RoleName = "Instructor",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CanSelfRegister = false,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Administrator with full system access",
+                            EmailDomain = "@coursemate.com",
+                            IsActive = true,
+                            RoleName = "Admin",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("CourseMate.Models.Admin", b =>
