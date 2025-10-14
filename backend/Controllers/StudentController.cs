@@ -25,7 +25,7 @@ namespace CourseMate.Controllers
 
             var validationResult = studentDto switch
             {
-                _ when !AllFieldsArePresent(studentDto)
+                _ when !ValidationHelper.HasAllFieldsFilled(studentDto)
                     => "Missing required fields.",
 
                 _ when studentDto.PhoneNumber?.Length != 11 ||
@@ -57,7 +57,7 @@ namespace CourseMate.Controllers
             return age;
         }
 
-        private bool AllFieldsArePresent(StudentDto studentDto)
+        private static bool AllFieldsArePresent(StudentDto studentDto)
         {
             return !(string.IsNullOrEmpty(studentDto.FirstName) ||
                      string.IsNullOrEmpty(studentDto.LastName) ||

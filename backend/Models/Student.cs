@@ -16,6 +16,8 @@ namespace CourseMate.Models
         public Guid DegreeId { get; set; }
         public Degree Degree { get; set; } = default!;
 
+        public bool IsGraduated { get; set; } = false;
+
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<StudentSemester> StudentSemesters { get; set; } = new List<StudentSemester>();
     }
