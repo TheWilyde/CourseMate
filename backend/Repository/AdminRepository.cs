@@ -2,13 +2,14 @@
 using CourseMate.Models;
 using CourseMate.Models.Enums;
 using Microsoft.EntityFrameworkCore;
-using CourseMate.Models.Dtos;
 
 namespace CourseMate.Repository
 {
 
     public interface IAdminRepository
     {
+        #region Student
+        #endregion
         Task<Admin?> GetAdminById(Guid Id);
         Task<Admin?> GetActiveAdminByEmail(string email);
     }

@@ -12,6 +12,7 @@ namespace CourseMate.Repository
         Task<IEnumerable<Student>> GetAllStudents();
         Task AddStudent(Student student);
         Task UpdateStudent(Student student);
+        Task<Student?> UpdateStudentGraduationStatus(Student student, bool isGraduated);
         Task DeleteStudent(Guid id);
     }
 
@@ -57,6 +58,15 @@ namespace CourseMate.Repository
                 _context.Students.Remove(student);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<Student?> UpdateStudentGraduationStatus(Student student, bool isGraduated)
+        {
+            student.IsGraduated = isGraduated;
+            student.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return student;
         }
     }
 }

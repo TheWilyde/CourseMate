@@ -25,6 +25,7 @@ namespace CourseMate.Controllers
             }
 
             var result = await _authService.Login(loginDto);
+
             return result;
         }
     }
