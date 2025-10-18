@@ -8,7 +8,7 @@ namespace CourseMate.Repository
     {
         Task <Course?> GetCourseById(Guid courseId);
         Task<IEnumerable<Course>> GetCoursesByStudent(Guid studentId);
-
+        Task<Course?> GetDepartmentIdOfACourse(Guid courseId);
     }
     public class CourseRepository : ICourseRepository
     {
@@ -36,5 +36,11 @@ namespace CourseMate.Repository
                 .ToListAsync();
         }
 
+        public async Task<Course?> GetDepartmentIdOfACourse(Guid courseId)
+        {
+            return await _context.Courses
+                .Where(c => c.CourseId == courseId)
+                .FirstOrDefaultAsync();
+        }
     }
 }

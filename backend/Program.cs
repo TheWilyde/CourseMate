@@ -23,7 +23,8 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAuthorizationRepositoryService, AuthorizationRepositoryService>();
 builder.Services.AddScoped<IAuthorizationRepository, AuthorizationRepository>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
-//builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 //builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 //builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 
